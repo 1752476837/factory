@@ -3,6 +3,7 @@ package com.ly.factory.service;
 import com.ly.factory.domain.Process;
 import com.ly.factory.mapper.ProcessMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,7 +16,6 @@ import java.util.List;
 public class ProcessService {
     @Autowired
     ProcessMapper processMapper;
-
 
     /**
      * 新增 一条流程
@@ -35,4 +35,16 @@ public class ProcessService {
     public List<Process> queryTree() {
         return processMapper.queryBaseTree(0);
     }
+
+    /**
+     * 更新修改，process记录
+     * @param process
+     * @return
+     */
+    public void updateProcess(Process process){
+
+        processMapper.updateProcess(process);
+
+    }
+
 }

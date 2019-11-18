@@ -46,4 +46,6 @@ public interface ProcessMapper extends BaseMapper<Process,Integer> {
     })
     public List<Process> queryNextTree(@Param("pid") Integer pid);
 
+    @Update("update tb_process set component_id=#{process.componentId},duty_id = #{process.dutyId},check_id = #{process.checkId},param_id = #{process.paramId},content = #{process.content} where id = #{process.id}")
+    public void updateProcess(@Param("process") Process process);
 }

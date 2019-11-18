@@ -40,4 +40,15 @@ public class ProcessController {
         return ResponseEntity.ok(treeList);
     }
 
+    /**
+     * 更新process的记录
+     * @param process
+     * @return
+     */
+    @PutMapping("update")
+    public ResponseEntity<Void> updateProcess(@RequestBody Process process){
+        processService.updateProcess(process);
+        return ResponseEntity.ok().build();
+    }
+
 }
