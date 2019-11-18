@@ -1,0 +1,13 @@
+server:
+  port: 10001
+spring:
+
+  #过滤返回值为null 空
+  jackson:
+    default-property-inclusion: non_null
+  application:
+    name: factory
+  datasource:
+    url: jdbc:mysql://localhost:3306/product?characterEncoding=UTF-8
+    username: root
+    password: root
