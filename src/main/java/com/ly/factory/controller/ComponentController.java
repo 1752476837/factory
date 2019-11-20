@@ -1,6 +1,7 @@
 package com.ly.factory.controller;
 
 import com.ly.factory.domain.Component;
+import com.ly.factory.domain.vo.Skill;
 import com.ly.factory.service.ComponentService;
 import com.ly.factory.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -96,5 +97,14 @@ public class ComponentController {
         return ResponseEntity.ok(list);
     }
 
+    /**
+     * 注册页面获取职能列表
+     * @return
+     */
+    @GetMapping("querySkillSelect")
+    public ResponseEntity<List<Skill>> querySkillSelect(){
+        List<Skill> list = componentService.querySkillSelect();
+        return ResponseEntity.ok(list);
+    }
 
 }

@@ -16,7 +16,7 @@ import java.util.List;
 public interface ProcessMapper extends BaseMapper<Process,Integer> {
 
     //查询全部内容的树结构
-    @Select("select * from tb_process where parent_id = #{pid}")
+    @Select("select * from tb_process where parent_id = 0 and product_id = #{pid}")
     @Results({
             @Result(id=true,property = "id" ,column = "id"),
             @Result(property = "componentId",column = "component_id"),
@@ -26,6 +26,7 @@ public interface ProcessMapper extends BaseMapper<Process,Integer> {
             @Result(property = "paramId",column = "param_id"),
             @Result(property = "parentId",column = "parent_id"),
             @Result(property = "content",column = "content"),
+            @Result(property = "productId",column = "product_id"),
             @Result(property = "child",column = "id" ,javaType = java.util.List.class,many = @Many(select = "com.ly.factory.mapper.ProcessMapper.queryNextTree"))
     })
     public List<Process> queryBaseTree(@Param("pid") Integer pid);
@@ -48,4 +49,13 @@ public interface ProcessMapper extends BaseMapper<Process,Integer> {
 
     @Update("update tb_process set component_id=#{process.componentId},duty_id = #{process.dutyId},check_id = #{process.checkId},param_id = #{process.paramId},content = #{process.content} where id = #{process.id}")
     public void updateProcess(@Param("process") Process process);
+
+
+    //根据productId查询,负责人员工列表
+    @Select("select duty_id from tb_process where product_id = #{pid}")
+    public List<Integer> queryDutyListByProductId(Integer pid);
+
+    //根据productId查询,审核员员工列表
+    @Select("select check_id from tb_process where product_id = #{pid}")
+    public List<Integer> queryCheckListByProductId(Integer pid);
 }

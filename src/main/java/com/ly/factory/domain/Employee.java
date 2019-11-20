@@ -2,10 +2,7 @@ package com.ly.factory.domain;
 
 import lombok.Data;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 /**
  * @author Tarry
@@ -18,8 +15,13 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String name;        //姓名
-    private String factory;    //工厂
     private String company;    //公司
+    private String factory;    //工厂
+    @Transient   //不作为数据库字段
+    private String[] factoryId;  //用来接收前台的[公司/工厂] 数组
+
+    @Transient
+    private String smscode;    //短信验证码【不作为数据库字段】
     private String phone;     //手机号
     private String password;   //密码
     private Integer identity;  //身份【审核员还是负责人】

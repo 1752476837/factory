@@ -27,6 +27,10 @@ public interface EmployeeMapper extends BaseMapper<Employee,Integer> {
     @Select("select * from tb_employee where name like CONCAT('%',#{name},'%')")
     public List<Employee> searchEmps(String name);
 
-    @Select("select id,name from tb_employee where identity=#{identity}")
-    public List<Employee> queryByIdentity(@Param("identity") int identity);
+    @Select("select id,name from tb_employee where identity=#{identity} and skill like CONCAT('%',#{skill},'%')")
+    public List<Employee> queryByIdentity(@Param("identity") int identity,@Param("skill") String skill);
+
+    //查询手机号是否存在
+    @Select("select COUNT(*) from tb_employee where phone = #{phone}")
+    public Integer selectByPhone(String phone);
 }

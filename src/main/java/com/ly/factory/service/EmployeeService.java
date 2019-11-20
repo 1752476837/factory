@@ -1,6 +1,8 @@
 package com.ly.factory.service;
 
 import com.ly.factory.domain.Employee;
+import com.ly.factory.exception.ExceptionEnum;
+import com.ly.factory.exception.LyException;
 import com.ly.factory.mapper.EmployeeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -41,8 +43,25 @@ public class EmployeeService {
      * 2审核人
      * @return
      */
-    public List<Employee> queryIdentityList(Integer identity) {
-        return employeeMapper.queryByIdentity(identity);
+    public List<Employee> queryIdentityList(Integer identity,Integer componentId) {
+        String comp = String.valueOf(componentId);
+        String skill = ","+comp+",";
+        return employeeMapper.queryByIdentity(identity,skill);
     }
 
+    /**
+     * 员工注册
+     * @param employee
+     */
+    public void register(Employee employee) {
+        //验证手机号是否已经被注册
+        Integer integer = employeeMapper.selectByPhone(employee.getPhone());
+        if (integer != 0){
+            throw new LyException(ExceptionEnum.PHONE_IS_EXIST);
+        }
+
+
+        //密码应该进行加密，开发阶段略过
+        employeeMapper.insert(employee);
+    }
 }

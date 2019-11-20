@@ -25,6 +25,7 @@ public class Process {
     private Integer paramId;
     private Integer parentId;
     private String content;
+    private String productId;
     private List<Process> child;  //树结构，存放子流程
 
 }

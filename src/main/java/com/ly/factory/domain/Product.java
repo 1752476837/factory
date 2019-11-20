@@ -6,6 +6,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -14,16 +15,14 @@ import java.util.HashMap;
  */
 @Data
 @Table(name = "tb_product")
-public class Products  {
+public class Product  {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    private String param;
-    private String type;
-    private String fuzeren;
-    private String shenheren;
-
-
+    private Date createTime;
+    private Date endTime;
+    private Integer state;  //状态
+    private Integer dutyId;
 
 }

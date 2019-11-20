@@ -3,6 +3,7 @@ package com.ly.factory.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ly.factory.domain.Component;
+import com.ly.factory.domain.vo.Skill;
 import com.ly.factory.mapper.ComponentMapper;
 import com.ly.factory.utils.PageResult;
 import org.apache.commons.lang3.StringUtils;
@@ -94,5 +95,13 @@ public class ComponentService {
      */
     public List<Component> querySelectComponent2() {
        return componentMapper.selectListAndTypeTitle();
+    }
+
+    /**
+     * 注册页面获取职能列表
+     * @return
+     */
+    public List<Skill> querySkillSelect() {
+       return componentMapper.querySkillSelect();
     }
 }
