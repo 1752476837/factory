@@ -1,6 +1,7 @@
 package com.ly.factory.mapper;
 
 import com.ly.factory.domain.Process;
+import com.ly.factory.domain.dto.EmpTaskDTO;
 import com.ly.factory.utils.BaseMapper;
 import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
@@ -26,6 +27,9 @@ public interface ProcessMapper extends BaseMapper<Process,Integer> {
             @Result(property = "paramId",column = "param_id"),
             @Result(property = "parentId",column = "parent_id"),
             @Result(property = "content",column = "content"),
+            @Result(property = "state",column = "state"),
+            @Result(property = "count",column = "count"),
+            @Result(property = "checkCount",column = "check_count"),
             @Result(property = "productId",column = "product_id"),
             @Result(property = "child",column = "id" ,javaType = java.util.List.class,many = @Many(select = "com.ly.factory.mapper.ProcessMapper.queryNextTree"))
     })
@@ -43,6 +47,10 @@ public interface ProcessMapper extends BaseMapper<Process,Integer> {
             @Result(property = "paramId",column = "param_id"),
             @Result(property = "parentId",column = "parent_id"),
             @Result(property = "content",column = "content"),
+            @Result(property = "state",column = "state"),
+            @Result(property = "count",column = "count"),
+            @Result(property = "checkCount",column = "check_count"),
+
             @Result(property = "child",column = "id" ,javaType = java.util.List.class,many = @Many(select = "com.ly.factory.mapper.ProcessMapper.queryNextTree"))
     })
     public List<Process> queryNextTree(@Param("pid") Integer pid);
@@ -52,10 +60,25 @@ public interface ProcessMapper extends BaseMapper<Process,Integer> {
 
 
     //根据productId查询,负责人员工列表
-    @Select("select duty_id from tb_process where product_id = #{pid}")
-    public List<Integer> queryDutyListByProductId(Integer pid);
+    @Select("select id,duty_id,count,component_id from tb_process where product_id = #{pid}")
+    @Results({
+            @Result(id=true,property = "id" ,column = "id"),
+            @Result(property = "empId",column = "duty_id"),
+            @Result(property = "count",column = "count"),
+            @Result(property = "componentId",column = "component_id")
+    })
+    public List<Process> queryDutyListByProductId(Integer pid);
 
     //根据productId查询,审核员员工列表
-    @Select("select check_id from tb_process where product_id = #{pid}")
-    public List<Integer> queryCheckListByProductId(Integer pid);
+    @Select("select id,check_id,count,component_id from tb_process where product_id = #{pid}")
+    @Results({
+            @Result(id=true,property = "id" ,column = "id"),
+            @Result(property = "empId",column = "check_id"),
+            @Result(property = "count",column = "count"),
+            @Result(property = "componentId",column = "component_id")
+    })
+    public List<Process> queryCheckListByProductId(Integer pid);
+
+    @Update("update tb_process set state = #{i} where product_id=#{pid}")
+    public void updateState(@Param("pid") int pid,@Param("i") int i);
 }

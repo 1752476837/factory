@@ -3,6 +3,7 @@ package com.ly.factory.domain;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * @author Tarry
@@ -26,6 +27,8 @@ public class Employee {
     private String password;   //密码
     private Integer identity;  //身份【审核员还是负责人】
     private String skill;     //职能【可以负责什么】
+
+    private Integer state;    // 状态  0 未审核   1 审核通过   2 不合格
 
 
 }

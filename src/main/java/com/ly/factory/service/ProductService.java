@@ -3,6 +3,7 @@ package com.ly.factory.service;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.ly.factory.domain.Product;
+import com.ly.factory.domain.dto.ProductDTO;
 import com.ly.factory.mapper.ProductMapper;
 import com.ly.factory.utils.PageResult;
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import tk.mybatis.mapper.entity.Example;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -26,6 +28,7 @@ public class ProductService {
     public void insertProduct(Product product) {
         product.setCreateTime(new Date());
         product.setState(0);
+        product.setCurCount(0);
         productMapper.insert(product);
     }
 
@@ -77,5 +80,10 @@ public class ProductService {
      */
     public String queryNameById(Integer id) {
         return productMapper.queryNameById(id);
+    }
+
+    public ProductDTO queryState(Integer pid) {
+        return productMapper.queryState(pid);
+
     }
 }

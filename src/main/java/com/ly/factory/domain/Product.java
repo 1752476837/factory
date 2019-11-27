@@ -24,5 +24,8 @@ public class Product  {
     private Date endTime;
     private Integer state;  //状态
     private Integer dutyId;
+    private Integer curCount;  //当前完成数量
+    private Integer count;     //总量
+
 
 }

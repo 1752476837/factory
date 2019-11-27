@@ -2,6 +2,7 @@ package com.ly.factory.service;
 
 import com.ly.factory.domain.EmpTask;
 import com.ly.factory.domain.Process;
+import com.ly.factory.domain.dto.EmpTaskDTO;
 import com.ly.factory.mapper.EmpTaskMapper;
 import com.ly.factory.mapper.ProcessMapper;
 import com.ly.factory.mapper.ProductMapper;
@@ -33,6 +34,11 @@ public class ProcessService {
      */
     public void insertProcess(Process process) {
         process.setId(null);
+        process.setState(0);
+        process.setDutyCount(0);
+        process.setCheckCount(0);
+        process.setMistake(0);
+        process.setPassCount(0);
         processMapper.insert(process);
     }
 
@@ -113,28 +119,45 @@ public class ProcessService {
     public void startCreate(Integer pid) {
         System.out.println("开始生产id："+pid);
 //       1. 查询该产品相关的负责人员工的id 集合
-        List<Integer> dutyList = processMapper.queryDutyListByProductId(pid);
-
-//      2.  查询该产品所有的 审核员 Id 集合
-        List<Integer> checkList = processMapper.queryCheckListByProductId(pid);
-
-//      3. 将任务数据，放到同一个 taskList中
-//         两个list合并成一个
-        dutyList.addAll(checkList);
+        List<Process> dutyList = processMapper.queryDutyListByProductId(pid);
         List<EmpTask> taskList = new ArrayList<>();
-        for (Integer empId : dutyList) {
+        for (Process item : dutyList) {
             EmpTask empTask = new EmpTask();
-            empTask.setEmpId(empId);
-            empTask.setProcessId(pid);
-            empTask.setState(0);
+            empTask.setProcessId(item.getId());
+            empTask.setEmpId(item.getEmpId());
+            empTask.setType(1); //负责人 1
+            empTask.setState(1); //生成状态1执行中
+            empTask.setCount(item.getCount());
+            empTask.setProductId(pid);
+            empTask.setComponentId(item.getComponentId());
+
             taskList.add(empTask);
         }
 
-//        4.对emptask表进行批量插入
+//      2.  查询该产品所有的 审核员 Id 集合
+        List<Process> checkList = processMapper.queryCheckListByProductId(pid);
+        for (Process item : checkList) {
+            EmpTask empTask = new EmpTask();
+            empTask.setProcessId(item.getId());
+            empTask.setEmpId(item.getEmpId());
+            empTask.setType(2); //审核人 2
+            empTask.setState(1); //生成状态1执行中
+            empTask.setCount(item.getCount());
+            empTask.setProductId(pid);
+            empTask.setComponentId(item.getComponentId());
+
+            taskList.add(empTask);
+        }
+
+//        3.对emptask表进行批量插入
         empTaskMapper.insertList(taskList);
 
-//        5.修改product表，标记该产品的状态
+//        4.修改product表，标记该产品的状态
         productMapper.setState(pid,1);
+
+//        5.修改表process的状态    0未开始，1 进行中未完成，2生产完成待审核，3不合格重新生产，4审核完成
+
+        processMapper.updateState(pid,1);
 
 
     }
