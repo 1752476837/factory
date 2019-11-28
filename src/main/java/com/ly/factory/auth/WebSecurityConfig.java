@@ -3,7 +3,9 @@ package com.ly.factory.auth;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -13,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 @Order(-1)
 class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
@@ -34,11 +37,16 @@ class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     }
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.csrf().disable()
-                .httpBasic().and()
-                .formLogin()
+        http.requestMatchers().antMatchers(HttpMethod.OPTIONS, "/**")
                 .and()
-                .authorizeRequests().anyRequest().authenticated();
+                .cors()
+                .and()
+                .csrf().disable();
+//        http.csrf().disable()
+//                .httpBasic().and()
+//                .formLogin()
+//                .and()
+//                .authorizeRequests().anyRequest().authenticated();
 
     }
 }

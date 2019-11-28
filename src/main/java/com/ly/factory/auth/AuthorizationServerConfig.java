@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.bootstrap.encrypt.KeyProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.config.annotation.configurers.ClientDetailsServiceConfigurer;
@@ -22,7 +23,11 @@ import org.springframework.security.oauth2.provider.token.store.KeyStoreKeyFacto
 
 import javax.annotation.Resource;
 import javax.sql.DataSource;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.security.KeyPair;
+import java.util.stream.Collectors;
 
 
 @Configuration
@@ -36,6 +41,8 @@ class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
     @Autowired
     private JwtAccessTokenConverter jwtAccessTokenConverter;
 
+    //公钥
+    private static final String PUBLIC_KEY = "pubKey.txt";
     @Autowired
     UserDetailsServiceImpl userDetailsService;
     @Autowired
@@ -97,11 +104,32 @@ class AuthorizationServerConfig extends AuthorizationServerConfigurerAdapter {
                 (keyProperties.getKeyStore().getLocation(), keyProperties.getKeyStore().getSecret().toCharArray())
                 .getKeyPair(keyProperties.getKeyStore().getAlias(),keyProperties.getKeyStore().getPassword().toCharArray());
         converter.setKeyPair(keyPair);
+
+        //设置公钥
+        converter.setVerifierKey(getPubKey());
+
         //配置自定义的CustomUserAuthenticationConverter
         DefaultAccessTokenConverter accessTokenConverter = (DefaultAccessTokenConverter) converter.getAccessTokenConverter();
         accessTokenConverter.setUserTokenConverter(customUserAuthenticationConverter);
         return converter;
     }
+
+
+    /**
+     * 获取非对称加密公钥 Key
+     * @return 公钥 Key
+     */
+    private String getPubKey() {
+        org.springframework.core.io.Resource resource = new ClassPathResource(PUBLIC_KEY);
+        try {
+            InputStreamReader inputStreamReader = new InputStreamReader(resource.getInputStream());
+            BufferedReader br = new BufferedReader(inputStreamReader);
+            return br.lines().collect(Collectors.joining("\n"));
+        } catch (IOException ioe) {
+            return null;
+        }
+    }
+
     //授权服务器端点配置
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {

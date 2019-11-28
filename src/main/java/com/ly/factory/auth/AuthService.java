@@ -78,7 +78,15 @@ public class AuthService {
             e.printStackTrace();
             return null;
         }
+    }
 
+    /**
+     * 查询token剩余时间
+     * @return
+     */
+    public Long getExpire(String key){
+        Long expire = stringRedisTemplate.getExpire(key, TimeUnit.SECONDS);
+        return expire;
     }
 
 

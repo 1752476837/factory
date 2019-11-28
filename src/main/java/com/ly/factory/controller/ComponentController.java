@@ -7,6 +7,7 @@ import com.ly.factory.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
@@ -28,6 +29,7 @@ public class ComponentController {
      * @param component
      * @return
      */
+    @PreAuthorize("hasAuthority('component_edit')")
     @PostMapping("insert")
     public ResponseEntity<Void> insertComponent(@RequestBody Component component){
         componentService.insertComponent(component);
@@ -39,6 +41,7 @@ public class ComponentController {
      * @param component
      * @return
      */
+    @PreAuthorize("hasAuthority('component_edit')")
     @PutMapping("update")
     public ResponseEntity<Void> updateComponent(@RequestBody Component component){
 
@@ -52,6 +55,7 @@ public class ComponentController {
      * 按条件查询组件列表
      * @return
      */
+    @PreAuthorize("hasAuthority('component_view')")
     @GetMapping("queryList")
     public ResponseEntity<PageResult<Component>> queryListComponent(
             @RequestParam(required=false) String name,
