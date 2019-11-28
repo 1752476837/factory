@@ -1,5 +1,8 @@
-package com.ly.factory.service;
+package com.ly.factory.auth;
 
+
+import com.ly.factory.domain.Permission;
+import com.ly.factory.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -17,11 +20,13 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     ClientDetailsService clientDetailsService;
+
     @Autowired
     UserService userService;
 
@@ -43,7 +48,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             return null;
         }
 //        远程请求用户中心，根据账号查询用户信息
-        com.ly.factory.domain.User curUser = userService.findUserByPhone(username);
+        com.ly.factory.domain.User  curUser = userService.findUserByPhone(username);
         if (curUser == null){
             return null;
         }
@@ -52,9 +57,15 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         String password = curUser.getPassword();
 
 //        ------------------------------------------------------------
+        List<Permission> permissions = curUser.getPermissionList();
+        if(permissions == null){
+            permissions = new ArrayList<>();
+        }
+
         List<String> user_permission = new ArrayList<>();
-        //使用静态的权限表示用户所拥有的权限
-        user_permission.add("course_get_baseinfo");//查询课程信息
+        permissions.forEach(item-> user_permission.add(item.getPermissionCode()));
+        //查询用户的权限，表示用户所拥有的权限
+        //user_permission.add("course_get_baseinfo");//查询课程信息
         //user_permission.add("course_pic_list");//图片查询
         String user_permission_string  = StringUtils.join(user_permission.toArray(), ",");
 
@@ -62,7 +73,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
 
         UserJwt userDetails = new UserJwt(username,password,authList);
-        userDetails.setId(String.valueOf(curUser.getId()));
+        userDetails.setId(curUser.getId()+"");
         userDetails.setName(curUser.getPhone());//用户名称
        /* UserDetails userDetails = new org.springframework.security.core.userdetails.User(username,
                 password,

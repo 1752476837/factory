@@ -1,8 +1,10 @@
-package com.ly.factory.controller;
+package com.ly.factory.auth;
+
 
 import com.ly.factory.domain.User;
 import com.ly.factory.domain.ext.AuthToken;
-import com.ly.factory.service.AuthService;
+import com.ly.factory.exception.ExceptionEnum;
+import com.ly.factory.exception.LyException;
 import com.ly.factory.utils.CookieUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +22,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Map;
 
 /**
- * @author Tarry
- * @create 2019/11/27 9:53
- */
+ * @author Administrator
+ * @version 1.0
+ **/
 @RestController
 public class AuthController {
 
@@ -39,19 +41,19 @@ public class AuthController {
     AuthService authService;
 
 
-    @PostMapping("loginsys")
-    public ResponseEntity login(@RequestBody User user) {
+    @PostMapping("loginSys")
+    public ResponseEntity<String> login(@RequestBody User loginRequest) {
 
-        if(user == null || StringUtils.isEmpty(user.getPhone())){
-//            ExceptionCast.cast(AuthCode.AUTH_USERNAME_NONE);
+        if(loginRequest == null || StringUtils.isEmpty(loginRequest.getPhone())){
+            throw new LyException(ExceptionEnum.AUTH_USERNAME_NONE);
         }
-        if(user == null || StringUtils.isEmpty(user.getPassword())){
-//            ExceptionCast.cast(AuthCode.AUTH_PASSWORD_NONE);
+        if(loginRequest == null || StringUtils.isEmpty(loginRequest.getPassword())){
+            throw new LyException(ExceptionEnum.AUTH_USERNAME_NONE);
         }
         //账号
-        String username = user.getPhone();
+        String username = loginRequest.getPhone();
         //密码
-        String password = user.getPassword();
+        String password = loginRequest.getPassword();
         System.out.println("账号："+username+"      密码："+password);
         //申请令牌
         AuthToken authToken =  authService.login(username,password,clientId,clientSecret);
@@ -61,9 +63,8 @@ public class AuthController {
         //将令牌存储到cookie
         this.saveCookie(access_token);
 
-//        return new LoginResult(CommonCode.SUCCESS,access_token);
-        return ResponseEntity.ok("");
-    }
+        return ResponseEntity.ok(authToken.getJwt_token());
+}
 
     //将令牌存储到cookie
     private void saveCookie(String token){
@@ -90,17 +91,15 @@ public class AuthController {
         String uid = this.getTokenFromCookie();
         if (StringUtils.isBlank(uid)){
             //这里返回空值，不抛异常是因为，前台不显示就行，没必要抛异常
-//            return new JwtResult(CommonCode.FAIL,null);
+            return ResponseEntity.ok(null);
         }
         //去redis中查询jwt
         AuthToken userToken = authService.getUserToken(uid);
-
         //返回jwt令牌
         if (userToken != null){
             String jwt_token = userToken.getJwt_token();
-//            return new JwtResult(CommonCode.SUCCESS,jwt_token);
+            return ResponseEntity.ok(jwt_token);
         }
-
         return null;
     }
 

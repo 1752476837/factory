@@ -1,4 +1,4 @@
-package com.ly.factory.config;
+package com.ly.factory.auth;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

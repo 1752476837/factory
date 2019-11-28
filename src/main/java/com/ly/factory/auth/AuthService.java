@@ -1,9 +1,13 @@
-package com.ly.factory.service;
+package com.ly.factory.auth;
 
 import com.alibaba.fastjson.JSON;
 import com.ly.factory.domain.ext.AuthToken;
+import com.ly.factory.exception.ExceptionEnum;
+import com.ly.factory.exception.LyException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.client.ServiceInstance;
+import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -21,6 +25,10 @@ import java.net.URI;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * @author Administrator
+ * @version 1.0
+ **/
 @Service
 public class AuthService {
 
@@ -38,17 +46,16 @@ public class AuthService {
         //请求spring security申请令牌
         AuthToken authToken = this.applyToken(username, password, clientId, clientSecret);
         if(authToken == null){
-//            ExceptionCast.cast(AuthCode.AUTH_LOGIN_APPLYTOKEN_FAIL);
+            throw new LyException(ExceptionEnum.AUTH_LOGIN_APPLYTOKEN_FAIL);
         }
         //用户身份令牌
         String access_token = authToken.getAccess_token();
         //存储到redis中的内容
-
         String jsonString = JSON.toJSONString(authToken);
         //将令牌存储到redis
         boolean result = this.saveToken(access_token, jsonString, tokenValiditySeconds);
         if (!result) {
-//            ExceptionCast.cast(AuthCode.AUTH_LOGIN_TOKEN_SAVEFAIL);
+            throw new LyException(ExceptionEnum.AUTH_LOGIN_TOKEN_SAVEFAIL);
         }
         return authToken;
 
@@ -90,7 +97,9 @@ public class AuthService {
     }
     //申请令牌
     private AuthToken applyToken(String username, String password, String clientId, String clientSecret){
-        String authUrl ="http:localhost:10001/auth/oauth/token";
+
+        //令牌申请的地址 http://localhost:10001/oauth/token
+        String authUrl = "http://localhost:10001/oauth/token";
         //定义header
         LinkedMultiValueMap<String, String> header = new LinkedMultiValueMap<>();
         String httpBasic = getHttpBasic(clientId, clientSecret);
